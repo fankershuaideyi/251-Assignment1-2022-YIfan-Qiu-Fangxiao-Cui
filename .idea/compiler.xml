@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="_258_Assignment1" />
+        <module name="251-Assignment1-2022-YIfan-Qiu-Fangxiao-Cui" />
         <module name="258Assignment1" />
       </profile>
     </annotationProcessing>

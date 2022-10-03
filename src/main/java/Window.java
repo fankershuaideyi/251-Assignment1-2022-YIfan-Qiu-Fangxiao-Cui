@@ -1,5 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 
 public class Window extends JFrame {
     JFrame jf = new JFrame();
@@ -17,12 +26,13 @@ public class Window extends JFrame {
         jf.setTitle("Text Editor");
         jf.setBounds((w-500)/2,(h-700)/2,500,700);
 
-        //初始化菜单
-        initMenuBar();
-
-        //初始化页签
         JTextPane workArea = new JTextPane();
         JScrollPane scrollPane = new JScrollPane(workArea);
+        //初始化菜单
+        initMenuBar(workArea);
+
+        //初始化页签
+
 
         //将字体变蓝
         workArea.setForeground(Color.BLUE);
@@ -36,7 +46,7 @@ public class Window extends JFrame {
 //        initJTabbedPane(tabbedPane);
 //        jf.getContentPane().add(tabbedPane);
     }
-    void initMenuBar(){
+    void initMenuBar(JTextPane workArea){
         JMenuBar menuBar = new JMenuBar();
         jf.setJMenuBar(menuBar);
 
@@ -54,6 +64,36 @@ public class Window extends JFrame {
         JMenuItem fileItem_new = new JMenuItem("new");
         JMenuItem fileItem_open = new JMenuItem("open");
         JMenuItem fileItem_save = new JMenuItem("save");
+        FileDialog saveDia;
+        saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
+        // a funtion for save
+        fileItem_save.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                File fileS = null;
+                if(fileS == null){
+                    saveDia.setVisible(true);
+                    String dirPath = saveDia.getDirectory();
+                    String fileName = saveDia.getFile();
+
+                    if(dirPath == null || fileName == null) {
+                        return;
+                    }
+
+                    fileS = new File(dirPath,fileName);
+                }
+
+                try{
+                    BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
+                    String text = workArea.getText();
+                    bufw.write(text);
+                    bufw.close();
+                }catch(IOException er){
+                    throw new RuntimeException("file saved failed");
+                }
+            }
+        });
+
         JMenuItem fileItem_print = new JMenuItem("print");
         JMenuItem fileItem_exit = new JMenuItem("exit");
         menu_file.add(fileItem_new);
@@ -115,6 +155,10 @@ public class Window extends JFrame {
         RunHere runHere = new RunHere();
 
         Window window1 = new Window(RunHere.width+200, RunHere.height+100);
+    }
+    void saveasPdf(){
+        PDDocument document = new PDDocument();
+        PDPage my_page=new PDPage();
     }
 
 }

@@ -1,42 +1,53 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Window extends JFrame {
-    JFrame jf = new JFrame();
-    JTabbedPane tabbedPane = new JTabbedPane();
-    int textAreaIndex = 1;
-    Window(int w,int h){
-        init(w,h);
+
+    private static int width_screen = RunHere.width;
+    private static int height_screen = RunHere.height;
+    private JTextArea workArea;
+    private JScrollPane scrollPane;
+    private JFrame jf = new JFrame();
+
+
+    Window() {
+        init(width_screen, height_screen);
         jf.setVisible(true);
         jf.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-
     }
-    void init(int w,int h){
+
+    void init(int w, int h) {
         //设置主页面
         jf.setTitle("Text Editor");
-        jf.setBounds((w-500)/2,(h-700)/2,500,700);
+        jf.setBounds((w - 500) / 2, (h - 700) / 2, 500, 700);
 
+
+        width_screen += 200;
+        height_screen += 100;
         //初始化菜单
         initMenuBar();
 
         //初始化页签
-        JTextPane workArea = new JTextPane();
-        JScrollPane scrollPane = new JScrollPane(workArea);
+        workArea = new JTextArea();
+        scrollPane = new JScrollPane(workArea);
 
         //将字体变蓝
-        workArea.setForeground(Color.BLUE);
+//        workArea.setForeground(Color.BLUE);
 
         //字体大小变粗等
-        workArea.setFont(new Font("eag fawdawrawr awr aw rawr ", Font.BOLD, 20));
+//        workArea.setFont(new Font("Cui", Font.BOLD, 20));
 
         //加入到主页面中
         jf.add(scrollPane);
 
-//        initJTabbedPane(tabbedPane);
-//        jf.getContentPane().add(tabbedPane);
+
     }
-    void initMenuBar(){
+
+    void initMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         jf.setJMenuBar(menuBar);
 
@@ -65,7 +76,6 @@ public class Window extends JFrame {
         //Search 菜单
 
 
-
         //View 菜单
         JMenuItem viewItem_TD = new JMenuItem("Time and Date");
         menu_view.add(viewItem_TD);
@@ -76,45 +86,46 @@ public class Window extends JFrame {
         menu_help.add(helpItem_about);
 
         //new
-        fileItem_new.addActionListener(e -> addNewTabbedPane());
+        fileItem_new.addActionListener(e -> New());
+
+        //open
+        fileItem_open.addActionListener(e -> openFile());
+
+        //about
+        helpItem_about.addActionListener(e -> about());
     }
 
-    void initJTabbedPane(JTabbedPane tabbedPane) {
-        //新标签的title
-        String title;
-        if (textAreaIndex == 1) {
-            title = "文本文档.txt";
-        } else {
-            title = "文本文档" + (textAreaIndex) + ".txt";
-        }
-
-        //创建workArea
-        JTextPane workArea = new JTextPane();
-        JScrollPane scrollPane = new JScrollPane(workArea);
-
-
-        //加到标签栏中
-        tabbedPane.addTab(title, null, scrollPane, null);
-
-        //获取当前选项卡的位置
-        int tabCount = tabbedPane.getTabCount();
-
-        //将选项卡切换到新创建的一页上
-        tabbedPane.setSelectedIndex(tabCount - 1);
-
-        //实现关闭选项卡的功能通过ButtonTabComponent类
-        tabbedPane.setTabComponentAt(tabCount-1,new ButtonTabComponent(tabbedPane));
-
-        //页签的页码加1
-        textAreaIndex++;
-    }
 
     //创建一个新的标签
-    void addNewTabbedPane(){
-//        initJTabbedPane(tabbedPane);
-        RunHere runHere = new RunHere();
-
-        Window window1 = new Window(RunHere.width+200, RunHere.height+100);
+    void New() {
+        new Window();
+        width_screen += 200;
+        height_screen += 100;
     }
 
+    void openFile() {
+        JFileChooser jFileChooser = new JFileChooser();
+        int chose = jFileChooser.showOpenDialog(null);
+        if (chose == JFileChooser.CANCEL_OPTION) {
+            return;
+        }
+        File F = jFileChooser.getSelectedFile();
+        if (F != null) {
+            jf.setTitle(F.getName());
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(F));
+                String line;
+                while((line = br.readLine()) != null){
+                    workArea.append(line + "\r\n");
+                }
+            }catch (IOException er1){
+                throw new RuntimeException("Failed!！");
+            }
+        }
+    }
+
+    void about(){
+        JOptionPane.showMessageDialog(null,"Qiu Yifan\n" +
+                "Cui Fangxiao is handsome","About Us",JOptionPane.PLAIN_MESSAGE);
+    }
 }

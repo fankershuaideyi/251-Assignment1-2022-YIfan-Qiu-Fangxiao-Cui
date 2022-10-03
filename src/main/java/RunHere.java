@@ -8,6 +8,6 @@ public class RunHere {
         Dimension screenSize = tit.getScreenSize();
         width = screenSize.width;
         height = screenSize.height;
-        Window window = new Window(width,height);
+        Window window = new Window();
     }
 }

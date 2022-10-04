@@ -11,13 +11,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 public class Window extends JFrame {
 
-    private static int width_screen = RunHere.width;
-    private static int height_screen = RunHere.height;
+    private int width_screen = RunHere.width;
+    private int height_screen = RunHere.height;
     private JTextArea workArea;
     private JScrollPane scrollPane;
     private JFrame jf = new JFrame();
 
-    private FileDialog saveDia;
+    public FileDialog saveDia;
 
 
     Window() {
@@ -103,7 +103,7 @@ public class Window extends JFrame {
         fileItem_new.addActionListener(e -> New());
 
         //open
-        fileItem_open.addActionListener(e -> openFile());
+        fileItem_open.addActionListener(e -> open());
 
         //exit
         fileItem_exit.addActionListener(e -> exit());
@@ -145,7 +145,9 @@ public class Window extends JFrame {
             saveDia.setVisible(true);
             String dirPath = saveDia.getDirectory();
             String fileName = saveDia.getFile();
-
+            if (fileName.contains(".txt")) {
+                fileName += ".txt";
+            }
             if(dirPath == null || fileName == null) {
                 return;
             }
@@ -160,6 +162,7 @@ public class Window extends JFrame {
         }catch(IOException er){
             throw new RuntimeException("file saved failed");
         }
+
     }
 
     void New() {
@@ -168,11 +171,11 @@ public class Window extends JFrame {
         height_screen += 100;
     }
 
-    void openFile() {
+    void open() {
         JFileChooser jFileChooser = new JFileChooser();
         int chose = jFileChooser.showOpenDialog(null);
         if (chose == JFileChooser.CANCEL_OPTION) {
-            return;
+            return ;
         }
         File F = jFileChooser.getSelectedFile();
         if (F != null) {

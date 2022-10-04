@@ -17,6 +17,8 @@ public class Window extends JFrame {
     private JScrollPane scrollPane;
     private JFrame jf = new JFrame();
 
+    private FileDialog saveDia;
+
 
     Window() {
         init(width_screen, height_screen);
@@ -58,11 +60,11 @@ public class Window extends JFrame {
 
         //菜单栏
         JMenu menu_file = new JMenu("  File  ");
-        JMenu menu_search = new JMenu("  Search  ");
+        JMenu menu_edit = new JMenu("  Edit  ");
         JMenu menu_view = new JMenu("  View  ");
         JMenu menu_help = new JMenu("  Help  ");
         menuBar.add(menu_file);
-        menuBar.add(menu_search);
+        menuBar.add(menu_edit);
         menuBar.add(menu_view);
         menuBar.add(menu_help);
 
@@ -70,35 +72,6 @@ public class Window extends JFrame {
         JMenuItem fileItem_new = new JMenuItem("new");
         JMenuItem fileItem_open = new JMenuItem("open");
         JMenuItem fileItem_save = new JMenuItem("save");
-
-
-        FileDialog saveDia;
-        saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
-        // a funtion for save
-        fileItem_save.addActionListener(e -> {
-            File fileS = null;
-            if(fileS == null){
-                saveDia.setVisible(true);
-                String dirPath = saveDia.getDirectory();
-                String fileName = saveDia.getFile();
-
-                if(dirPath == null || fileName == null) {
-                    return;
-                }
-                fileS = new File(dirPath,fileName);
-            }
-
-            try{
-                BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
-                String text = workArea.getText();
-                bufw.write(text);
-                bufw.close();
-            }catch(IOException er){
-                throw new RuntimeException("file saved failed");
-            }
-        });
-
-
         JMenuItem fileItem_print = new JMenuItem("print");
         JMenuItem fileItem_exit = new JMenuItem("exit");
         menu_file.add(fileItem_new);
@@ -107,8 +80,15 @@ public class Window extends JFrame {
         menu_file.add(fileItem_print);
         menu_file.add(fileItem_exit);
 
-        //Search 菜单
-
+        //Edit 菜单
+        JMenuItem editItem_search = new JMenuItem("search");
+        JMenuItem editItem_copy = new JMenuItem("copy");
+        JMenuItem editItem_paste = new JMenuItem("paste");
+        JMenuItem editItem_cut = new JMenuItem("cut");
+        menu_edit.add(editItem_search);
+        menu_edit.add(editItem_copy);
+        menu_edit.add(editItem_paste);
+        menu_edit.add(editItem_cut);
 
         //View 菜单
         JMenuItem viewItem_TD = new JMenuItem("Time and Date");
@@ -125,12 +105,63 @@ public class Window extends JFrame {
         //open
         fileItem_open.addActionListener(e -> openFile());
 
+        //exit
+        fileItem_exit.addActionListener(e -> exit());
+
         //about
         helpItem_about.addActionListener(e -> about());
+
+        //save
+        fileItem_save.addActionListener(e -> save());
+
+        //copy
+        editItem_copy.addActionListener(e -> Copy());
+
+        //paste
+        editItem_paste.addActionListener(e -> Paste());
+
+        //cut
+        editItem_cut.addActionListener(e -> Cut());
+
+        //print
+        fileItem_print.addActionListener(e -> Print());
+
+        //Time and Date
+        viewItem_TD.addActionListener(e -> TD());
     }
 
+    void TD(){
 
-    //创建一个新的标签
+    }
+
+    void Print(){
+
+    }
+
+    void save(){
+        saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
+        File fileS = null;
+        if(fileS == null){
+            saveDia.setVisible(true);
+            String dirPath = saveDia.getDirectory();
+            String fileName = saveDia.getFile();
+
+            if(dirPath == null || fileName == null) {
+                return;
+            }
+            fileS = new File(dirPath,fileName);
+        }
+
+        try{
+            BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
+            String text = workArea.getText();
+            bufw.write(text);
+            bufw.close();
+        }catch(IOException er){
+            throw new RuntimeException("file saved failed");
+        }
+    }
+
     void New() {
         new Window();
         width_screen += 200;
@@ -158,9 +189,24 @@ public class Window extends JFrame {
         }
     }
 
+    void exit(){
+        jf.dispose();
+    }
+
     void about(){
-        JOptionPane.showMessageDialog(null,"Qiu Yifan\n" +
-                "Cui Fangxiao is handsome","About Us",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(null,"Qiu Yifan\n  Cui Fangxiao is handsome","About Us",JOptionPane.PLAIN_MESSAGE);
+    }
+
+    void Cut(){
+        workArea.cut();
+
+    }
+    void Paste(){
+        workArea.paste();
+    }
+
+    void Copy(){
+        workArea.copy();
     }
 
     void saveasPdf(){

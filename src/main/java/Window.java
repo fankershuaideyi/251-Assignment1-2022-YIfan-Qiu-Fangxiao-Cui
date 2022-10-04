@@ -6,13 +6,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
+//import jdk.javadoc.internal.doclets.formats.html.Table;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.*;
 import org.apache.pdfbox.pdmodel.PDPage;
-public class Window extends JFrame {
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1CFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-    private int width_screen = RunHere.width;
-    private int height_screen = RunHere.height;
+public class Window extends JFrame {
+    private static int width_screen = RunHere.width;
+    private static int height_screen = RunHere.height;
     private JTextArea workArea;
     private JScrollPane scrollPane;
     private JFrame jf = new JFrame();
@@ -21,27 +31,28 @@ public class Window extends JFrame {
 
 
     Window() {
+
         init(width_screen, height_screen);
         jf.setVisible(true);
         jf.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     void init(int w, int h) {
-        //设置主页面
+        //set main table
         jf.setTitle("Text Editor");
         jf.setBounds((w - 500) / 2, (h - 700) / 2, 500, 700);
 
         width_screen += 200;
         height_screen += 100;
 
-        //初始化页签
+        //Initialize the tab
         workArea = new JTextArea();
         scrollPane = new JScrollPane(workArea);
 
         jf.add(scrollPane);
 
-        //初始化菜单
-        initMenuBar(workArea);
+        //Initialize the menu
+        initMenuBar();
 
         //将字体变蓝
 //        workArea.setForeground(Color.BLUE);
@@ -54,7 +65,7 @@ public class Window extends JFrame {
 
 
 
-    void initMenuBar(JTextArea workArea){
+    void initMenuBar(){
         JMenuBar menuBar = new JMenuBar();
         jf.setJMenuBar(menuBar);
 
@@ -68,19 +79,26 @@ public class Window extends JFrame {
         menuBar.add(menu_view);
         menuBar.add(menu_help);
 
-        //File 菜单
+        //File
         JMenuItem fileItem_new = new JMenuItem("new");
         JMenuItem fileItem_open = new JMenuItem("open");
-        JMenuItem fileItem_save = new JMenuItem("save");
         JMenuItem fileItem_print = new JMenuItem("print");
         JMenuItem fileItem_exit = new JMenuItem("exit");
+        //save 具体
+        JMenu file_save_menu = new JMenu("save");
+        JMenuItem savetxt = new JMenuItem("save as '.txt'");
+        JMenuItem savepdf = new JMenuItem("save as '.pdf'");
+        file_save_menu.add(savetxt);
+        file_save_menu.add(savepdf);
+
+
         menu_file.add(fileItem_new);
         menu_file.add(fileItem_open);
-        menu_file.add(fileItem_save);
+        menu_file.add(file_save_menu);
         menu_file.add(fileItem_print);
         menu_file.add(fileItem_exit);
 
-        //Edit 菜单
+        //Edit
         JMenuItem editItem_search = new JMenuItem("search");
         JMenuItem editItem_copy = new JMenuItem("copy");
         JMenuItem editItem_paste = new JMenuItem("paste");
@@ -112,7 +130,14 @@ public class Window extends JFrame {
         helpItem_about.addActionListener(e -> about());
 
         //save
-        fileItem_save.addActionListener(e -> save());
+        savetxt.addActionListener(e -> saveAstxt());
+        savepdf.addActionListener(e -> {
+            try {
+                saveAspdf();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         //copy
         editItem_copy.addActionListener(e -> Copy());
@@ -128,6 +153,8 @@ public class Window extends JFrame {
 
         //Time and Date
         viewItem_TD.addActionListener(e -> TD());
+
+
     }
 
     void TD(){
@@ -138,14 +165,14 @@ public class Window extends JFrame {
 
     }
 
-    void save(){
+    void saveAstxt(){
         saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
         File fileS = null;
         if(fileS == null){
             saveDia.setVisible(true);
             String dirPath = saveDia.getDirectory();
             String fileName = saveDia.getFile();
-            if (fileName.contains(".txt")) {
+            if (!fileName.contains(".txt")) {
                 fileName += ".txt";
             }
             if(dirPath == null || fileName == null) {
@@ -162,7 +189,6 @@ public class Window extends JFrame {
         }catch(IOException er){
             throw new RuntimeException("file saved failed");
         }
-
     }
 
     void New() {
@@ -204,17 +230,29 @@ public class Window extends JFrame {
         workArea.cut();
 
     }
-    void Paste(){
-        workArea.paste();
-    }
 
     void Copy(){
         workArea.copy();
     }
 
-    void saveasPdf(){
-        PDDocument document = new PDDocument();
-        PDPage my_page=new PDPage();
+    void Paste(){
+        workArea.paste();
     }
 
+
+    void saveAspdf() throws Exception{
+        PDDocument document = new PDDocument();
+        PDPage my_page=new PDPage(PDRectangle.A4);
+        document.addPage(my_page);
+        PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
+        contentStream.beginText();
+
+        contentStream.newLineAtOffset(25, 500);
+        contentStream.setFont(,16);
+        contentStream.showText("Hello");
+        contentStream.endText();
+        contentStream.close();
+        document.save("C:/Users/fanker/Desktop/doc.pdf");
+        document.close();
+    }
 }

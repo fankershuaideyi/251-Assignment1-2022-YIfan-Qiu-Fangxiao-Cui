@@ -15,9 +15,9 @@ class WindowTest {
     }
 
     @Test
-    void save() {
+    void savetest() {
        Window window = Mockito.mock(Window.class);
-       window.save();
-        Mockito.verify(window).save();
+       window.saveAstxt();
+        Mockito.verify(window).saveAstxt();
     }
 }

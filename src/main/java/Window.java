@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,8 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import  org.dom4j.Document;
 
 //import jdk.javadoc.internal.doclets.formats.html.Table;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -258,27 +258,31 @@ public class Window extends JFrame {
         }
         fileS1 = new File(dirPath,fileName);
         try {
-
+            String s=workArea.getText();
+            String[] strings = s.split("\n");
             PDDocument document=new PDDocument();
-
             PDPage my_page=new PDPage(PDRectangle.A4);
             document.addPage(my_page);
             PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
             PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
             my_page.getResources().add(font);
+            //set font for pdf
+            workArea.getText(0,1);
+            for(int i=0;i<strings.length;i++){
             contentStream.beginText();
             contentStream.setFont(font,10);
-            contentStream.newLineAtOffset(25, 500);
-            contentStream.showText(workArea.getText());
+            contentStream.newLineAtOffset(10,  820-i*20);
+            contentStream.showText(strings[i]);
             contentStream.endText();
+            }
             contentStream.close();
-            System.out.println(fileS1);
             document.save(fileS1);
             document.close();
         }catch (IOException er){
             throw new RuntimeException("file saved failed");
         }
 
-
     }
+
+
 }

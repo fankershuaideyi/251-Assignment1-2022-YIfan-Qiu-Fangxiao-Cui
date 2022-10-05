@@ -1,10 +1,9 @@
-import org.junit.Assert;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import javax.swing.*;
 
 class WindowTest {
     @Test
@@ -16,8 +15,18 @@ class WindowTest {
 
     @Test
     void savetest() {
+
        Window window = Mockito.mock(Window.class);
        window.saveAstxt();
         Mockito.verify(window).saveAstxt();
+
+    }
+
+    @Test
+    void saveAspdf() throws Exception {
+        Window window = Mockito.mock(Window.class);
+        window.saveAspdf();
+        Mockito.verify(window).saveAspdf();
+
     }
 }

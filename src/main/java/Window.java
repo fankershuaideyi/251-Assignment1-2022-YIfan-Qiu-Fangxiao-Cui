@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,17 +7,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import  org.dom4j.Document;
 
 //import jdk.javadoc.internal.doclets.formats.html.Table;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.*;
+
+
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1CFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
@@ -28,7 +29,7 @@ public class Window extends JFrame {
     private JFrame jf = new JFrame();
 
     public FileDialog saveDia;
-
+    public FileDialog saveDia1;
 
     Window() {
 
@@ -165,32 +166,6 @@ public class Window extends JFrame {
 
     }
 
-    void saveAstxt(){
-        saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
-        File fileS = null;
-        if(fileS == null){
-            saveDia.setVisible(true);
-            String dirPath = saveDia.getDirectory();
-            String fileName = saveDia.getFile();
-            if (!fileName.contains(".txt")) {
-                fileName += ".txt";
-            }
-            if(dirPath == null || fileName == null) {
-                return;
-            }
-            fileS = new File(dirPath,fileName);
-        }
-
-        try{
-            BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
-            String text = workArea.getText();
-            bufw.write(text);
-            bufw.close();
-        }catch(IOException er){
-            throw new RuntimeException("file saved failed");
-        }
-    }
-
     void New() {
         new Window();
         width_screen += 200;
@@ -240,19 +215,74 @@ public class Window extends JFrame {
     }
 
 
-    void saveAspdf() throws Exception{
-        PDDocument document = new PDDocument();
-        PDPage my_page=new PDPage(PDRectangle.A4);
-        document.addPage(my_page);
-        PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
-        contentStream.beginText();
 
-        contentStream.newLineAtOffset(25, 500);
-        contentStream.setFont(,16);
-        contentStream.showText("Hello");
-        contentStream.endText();
-        contentStream.close();
-        document.save("C:/Users/fanker/Desktop/doc.pdf");
-        document.close();
+    void saveAstxt(){
+        saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
+        File fileS = null;
+
+        saveDia.setVisible(true);
+        String dirPath = saveDia.getDirectory();
+        String fileName = saveDia.getFile();
+        if (!fileName.contains(".txt")) {
+            fileName += ".txt";
+        }
+        if(dirPath == null || fileName == null) {
+            return;
+        }
+        fileS = new File(dirPath,fileName);
+
+        try{
+            BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
+            String text = workArea.getText();
+            bufw.write(text);
+            bufw.close();
+        }catch(IOException er){
+            throw new RuntimeException("file saved failed");
+        }
     }
+
+
+    void saveAspdf() throws Exception{
+
+        saveDia = new FileDialog(this,"save as(B)",FileDialog.SAVE);
+        File fileS1 = null;
+
+        saveDia.setVisible(true);
+        String dirPath = saveDia.getDirectory();
+        String fileName = saveDia.getFile();
+        if (!fileName.contains(".pdf")) {
+            fileName += ".pdf";
+        }
+        if(dirPath == null || fileName == null) {
+            return;
+        }
+        fileS1 = new File(dirPath,fileName);
+        try {
+            String s=workArea.getText();
+            String[] strings = s.split("\n");
+            PDDocument document=new PDDocument();
+            PDPage my_page=new PDPage(PDRectangle.A4);
+            document.addPage(my_page);
+            PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
+            PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
+            my_page.getResources().add(font);
+            //set font for pdf
+            workArea.getText(0,1);
+            for(int i=0;i<strings.length;i++){
+                contentStream.beginText();
+                contentStream.setFont(font,10);
+                contentStream.newLineAtOffset(10,  820-i*20);
+                contentStream.showText(strings[i]);
+                contentStream.endText();
+            }
+            contentStream.close();
+            document.save(fileS1);
+            document.close();
+        }catch (IOException er){
+            throw new RuntimeException("file saved failed");
+        }
+
+    }
+
+
 }

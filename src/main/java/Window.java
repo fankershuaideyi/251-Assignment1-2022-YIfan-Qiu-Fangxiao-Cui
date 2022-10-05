@@ -6,28 +6,22 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
-//import jdk.javadoc.internal.doclets.formats.html.Table;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.*;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1CFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class Window extends JFrame {
     private static int width_screen = RunHere.width;
     private static int height_screen = RunHere.height;
-    private JTextArea workArea;
+    public static JTextArea workArea;
     private JScrollPane scrollPane;
     private JFrame jf = new JFrame();
 
-    public FileDialog saveDia;
+    private FileDialog saveDia;
 
 
     Window() {
@@ -58,7 +52,7 @@ public class Window extends JFrame {
 //        workArea.setForeground(Color.BLUE);
 
         //字体大小变粗等
-//        workArea.setFont(new Font("Cui", Font.BOLD, 20));
+        workArea.setFont(new Font("Cui", Font.PLAIN, 20));
     }
 
 
@@ -148,13 +142,19 @@ public class Window extends JFrame {
         //cut
         editItem_cut.addActionListener(e -> Cut());
 
+
+        //search
+        editItem_search.addActionListener(e -> Search());
+
         //print
         fileItem_print.addActionListener(e -> Print());
 
         //Time and Date
         viewItem_TD.addActionListener(e -> TD());
+    }
 
-
+    void Search(){
+        new search(RunHere.width,RunHere.height);
     }
 
     void TD(){
@@ -162,7 +162,6 @@ public class Window extends JFrame {
     }
 
     void Print(){
-
     }
 
     void saveAstxt(){
@@ -240,19 +239,6 @@ public class Window extends JFrame {
     }
 
 
-    void saveAspdf() throws Exception{
-        PDDocument document = new PDDocument();
-        PDPage my_page=new PDPage(PDRectangle.A4);
-        document.addPage(my_page);
-        PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
-        contentStream.beginText();
-
-        contentStream.newLineAtOffset(25, 500);
-        contentStream.setFont(,16);
-        contentStream.showText("Hello");
-        contentStream.endText();
-        contentStream.close();
-        document.save("C:/Users/fanker/Desktop/doc.pdf");
-        document.close();
+    void saveAspdf(){
     }
 }

@@ -1,12 +1,15 @@
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.rtf.RTFEditorKit;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-
+import java.io.*;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -17,6 +20,9 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class Window extends JFrame {
     private static int width_screen = RunHere.width;
@@ -26,6 +32,8 @@ public class Window extends JFrame {
     private JFrame jf = new JFrame();
 
     private FileDialog saveDia;
+
+    private static String str = "";
 
 
     Window() {
@@ -181,8 +189,95 @@ public class Window extends JFrame {
             return ;
         }
         File F = jFileChooser.getSelectedFile();
+        workArea.setText("");
+        jf.setTitle(F.getName());
+        if(F.getName().contains(".rtf")){
+            openRtf(F);
+        }else if(F.getName().contains(".odt")){
+            openOdt(F);
+        }else {
+            openElse(F);
+        }
+
+    }
+
+    void openRtf(File F){
+        DefaultStyledDocument styleDoc = new DefaultStyledDocument();
+        String result;
+        //创建文件输入流
+        try {
+            InputStream inputStream = new FileInputStream(F);
+            try {
+                new RTFEditorKit().read(inputStream,styleDoc,0);
+                result = new String(styleDoc.getText(0,styleDoc.getLength()).getBytes("ISO8859-1"),"GBK");
+            } catch (IOException | BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        workArea.setText(result);
+    }
+
+    void openOdt(File F){
+        try {
+            ZipFile zipFile = new ZipFile(F);
+            org.w3c.dom.Document doc = null;
+            Enumeration<?> entries = zipFile.entries();
+            ZipEntry entry;
+            while (entries.hasMoreElements()){
+                entry = (ZipEntry)entries.nextElement();
+                if(entry.getName().equals("content.xml")){
+                    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+                    domFactory.setNamespaceAware(true);
+                    DocumentBuilder docBuilder = null;
+                    try {
+                        docBuilder = domFactory.newDocumentBuilder();
+                    } catch (ParserConfigurationException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        doc = docBuilder.parse(zipFile.getInputStream(entry));
+                    } catch (SAXException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    //获取节点
+                    NodeList list = doc.getElementsByTagName("text:p");
+                    for (int a = 0; a < list.getLength(); a++){
+                        Node node =list.item(a);
+                        // 递归获取标签内容
+                        getText(node);
+                        workArea.setText(str);
+                        // 清空数据，记录下个标签的内容
+                        str = "";
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void getText(org.w3c.dom.Node node) {
+        if (node.getChildNodes().getLength() > 1) {
+            NodeList childNodes = node.getChildNodes();
+            for (int a = 0; a < childNodes.getLength(); a++) {
+                getText(node.getChildNodes().item(a));
+            }
+        } else {
+            if (node.getNodeValue() != null) {
+                // str用来连接标签内容 用static修饰
+                str = str + node.getNodeValue();
+            }
+            if (node.getFirstChild() != null) {
+                str = str + node.getFirstChild().getNodeValue();
+            }
+        }
+    }
+
+    void openElse(File F){
         if (F != null) {
-            jf.setTitle(F.getName());
             try {
                 BufferedReader br = new BufferedReader(new FileReader(F));
                 String line;
@@ -194,7 +289,6 @@ public class Window extends JFrame {
             }
         }
     }
-
     void exit(){
         jf.dispose();
     }
@@ -222,15 +316,14 @@ public class Window extends JFrame {
     void saveAstxt(){
         saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
         File fileS = null;
-
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
-        if (!fileName.contains(".txt")) {
-            fileName += ".txt";
-        }
         if(dirPath == null || fileName == null) {
             return;
+        }
+        if (!fileName.contains(".txt")) {
+            fileName += ".txt";
         }
         fileS = new File(dirPath,fileName);
 
@@ -252,11 +345,11 @@ public class Window extends JFrame {
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
-        if (!fileName.contains(".pdf")) {
-            fileName += ".pdf";
-        }
         if(dirPath == null || fileName == null) {
             return;
+        }
+        if (!fileName.contains(".pdf")) {
+            fileName += ".pdf";
         }
         fileS1 = new File(dirPath,fileName);
         try {
@@ -283,8 +376,6 @@ public class Window extends JFrame {
         }catch (IOException er){
             throw new RuntimeException("file saved failed");
         }
-
     }
-
 
 }

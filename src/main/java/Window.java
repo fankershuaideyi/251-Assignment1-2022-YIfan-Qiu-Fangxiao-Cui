@@ -12,6 +12,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
+
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 
@@ -20,6 +29,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -30,8 +40,10 @@ public class Window extends JFrame {
     public static JTextArea workArea;
     private JScrollPane scrollPane;
     private JFrame jf = new JFrame();
-
+    public static File file;
     private FileDialog saveDia;
+
+
 
     private static String str = "";
 
@@ -159,7 +171,16 @@ public class Window extends JFrame {
         editItem_search.addActionListener(e -> Search());
 
         //print
-        fileItem_print.addActionListener(e -> Print());
+
+
+        fileItem_print.addActionListener(e -> {
+            try {
+                printer();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
 
         //Time and Date
         viewItem_TD.addActionListener(e -> TD());
@@ -316,15 +337,17 @@ public class Window extends JFrame {
     void saveAstxt(){
         saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
         File fileS = null;
+
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
-        if(dirPath == null || fileName == null) {
-            return;
-        }
         if (!fileName.contains(".txt")) {
             fileName += ".txt";
         }
+        if(dirPath == null || fileName == null) {
+            return;
+        }
+
         fileS = new File(dirPath,fileName);
 
         try{
@@ -353,29 +376,48 @@ public class Window extends JFrame {
         }
         fileS1 = new File(dirPath,fileName);
         try {
-            String s=workArea.getText();
-            String[] strings = s.split("\n");
-            PDDocument document=new PDDocument();
-            PDPage my_page=new PDPage(PDRectangle.A4);
-            document.addPage(my_page);
-            PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
-            PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
-            my_page.getResources().add(font);
-            //set font for pdf
-            workArea.getText(0,1);
-            for(int i=0;i<strings.length;i++){
-                contentStream.beginText();
-                contentStream.setFont(font,10);
-                contentStream.newLineAtOffset(10,  820-i*20);
-                contentStream.showText(strings[i]);
-                contentStream.endText();
-            }
-            contentStream.close();
-            document.save(fileS1);
-            document.close();
+
+            createpdf(fileS1);
+
         }catch (IOException er){
             throw new RuntimeException("file saved failed");
         }
+    }
+
+
+    public PDDocument createpdf(File fileS1) throws Exception {
+        String s = workArea.getText();
+        String[] strings = s.split("\n");
+        PDDocument document=new PDDocument();
+        PDPage my_page=new PDPage(PDRectangle.A4);
+        document.addPage(my_page);
+        PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
+        PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
+        my_page.getResources().add(font);
+        //set font for pdf
+        workArea.getText(0,1);
+        for(int i=0;i<strings.length;i++){
+            contentStream.beginText();
+            contentStream.setFont(font,10);
+            contentStream.newLineAtOffset(10,  820-i*20);
+            contentStream.showText(strings[i]);
+            contentStream.endText();
+        }
+        contentStream.close();
+        document.save(fileS1);
+        document.close();
+
+        return document;
+    }
+    void printer() throws Exception {
+        file=new File("D:","a.pdf");
+        createpdf(file);
+       print print=new print();
+       print.PDFprint();
+      if(file.exists()&&file.isFile()){
+          System.out.println(file.delete());
+       }
+
     }
 
 }

@@ -5,7 +5,7 @@ import javax.swing.text.Document;
 import java.awt.*;
 
 public class search extends JDialog {
-    JDialog jDialog = new JDialog();
+    JDialog jDialog = new JDialog(Window.jf);
     JLabel lookFor;
     JTextField lookFor_field;
     JButton jb1;

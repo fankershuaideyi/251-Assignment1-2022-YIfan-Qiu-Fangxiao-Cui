@@ -20,7 +20,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -40,7 +39,7 @@ public class Window extends JFrame {
 
     public static org.fife.ui.rsyntaxtextarea.RSyntaxTextArea workArea;
     private RTextScrollPane  scrollPane;
-    private JFrame jf = new JFrame();
+    public static JFrame jf = new JFrame();
 
     public static File file;
     private JLabel Time;
@@ -53,24 +52,19 @@ public class Window extends JFrame {
     Window() {
         init(width_screen, height_screen);
         jf.setVisible(true);
-        jf.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         while (true){
             getTime();
             Time.setText(currentTime);
         }
     }
 
-
     void init(int w, int h) {
         //set main table
         jf.setTitle("Text Editor");
         jf.setBounds((w - 500) / 2, (h - 700) / 2, 500, 700);
 
-        width_screen += 200;
-        height_screen += 100;
-
         //Initialize the tab
-
         workArea = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
         workArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         scrollPane = new RTextScrollPane(workArea);
@@ -142,8 +136,51 @@ public class Window extends JFrame {
 
         //View Menu
         JMenuItem viewItem_TD = new JMenuItem("Time and Date");
-        menu_view.add(viewItem_TD);
 
+
+        //Set font and background color in Menu View
+        JMenu Font = new JMenu("Font");
+        JMenuItem F_Blue = new JMenuItem("Blue");
+        JMenuItem F_Black = new JMenuItem("Black");
+        JMenuItem F_RED = new JMenuItem("Red");
+        JMenuItem F_Green = new JMenuItem("Green");
+        F_Blue.addActionListener(e -> {
+            workArea.setForeground(Color.BLUE);
+        });
+        F_Black.addActionListener(e -> {
+            workArea.setForeground(Color.BLACK);
+        });
+        F_RED.addActionListener(e -> {
+            workArea.setForeground(Color.RED);
+        });
+        F_Green.addActionListener(e -> {
+            workArea.setForeground(Color.GREEN);
+        });
+        Font.add(F_Black);
+        Font.add(F_Blue);
+        Font.add(F_RED);
+        Font.add(F_Green);
+
+        JMenu BlackGround = new JMenu("Background");
+        JMenuItem B_Lg = new JMenuItem("LightGray");
+        JMenuItem B_White = new JMenuItem("White");
+        JMenuItem B_Pink = new JMenuItem("Pink");
+        B_White.addActionListener(e -> {
+            workArea.setBackground(Color.WHITE);
+        });
+        B_Lg.addActionListener(e -> {
+            workArea.setBackground(Color.lightGray);
+        });
+        B_Pink.addActionListener(e -> {
+            workArea.setBackground(Color.pink);
+        });
+        BlackGround.add(B_White);
+        BlackGround.add(B_Lg);
+        BlackGround.add(B_Pink);
+
+        menu_view.add(viewItem_TD);
+        menu_view.add(Font);
+        menu_view.add(BlackGround);
 
         //Help Menu
         JMenuItem helpItem_about = new JMenuItem("about");
@@ -220,9 +257,51 @@ public class Window extends JFrame {
     }
 
     void New() {
-        new Window();
-        width_screen += 200;
-        height_screen += 100;
+        //Whether to save the current file when creating a JDialog
+        JDialog jd1 = new JDialog(jf);
+        jd1.setLayout(new FlowLayout(FlowLayout.LEFT));
+        jd1.setBounds((width_screen-260)/2,(height_screen-130)/2,260,130);
+        jd1.setVisible(true);
+        jd1.setTitle("Notepad");
+        //add buttons
+        JLabel jLabel = new JLabel("Do you want to save changes?");
+        jLabel.setFont(new Font("QWE",Font.PLAIN,16));
+        JButton save = new JButton("Save as 'txt'");
+        JButton savePDF = new JButton("Save as 'pdf'");
+        JButton notSave = new JButton("Don't save");
+        JButton Cancel = new JButton("Cancel");
+        JPanel jp = new JPanel();
+        jp.setLayout(new GridLayout(2,2));
+
+        //ActionListener
+        save.addActionListener(e -> {
+            saveAstxt();
+            jd1.dispose();
+        });
+        savePDF.addActionListener(e -> {
+            try {
+                saveAspdf();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            jd1.dispose();
+        });
+        notSave.addActionListener(e -> {
+            workArea.setText("");
+            jd1.dispose();
+        });
+        Cancel.addActionListener(e -> {
+            jd1.dispose();
+        });
+
+        //add
+        jd1.add(jLabel);
+        jd1.add(jp);
+        jp.add(save);
+        jp.add(savePDF);
+        jp.add(notSave);
+        jp.add(Cancel);
+
     }
 
     void open() {
@@ -243,6 +322,7 @@ public class Window extends JFrame {
         }
     }
 
+    //Open .rtf
     void openRtf(File F){
         DefaultStyledDocument styleDoc = new DefaultStyledDocument();
         String result;
@@ -260,6 +340,7 @@ public class Window extends JFrame {
         workArea.setText(result);
     }
 
+    //open odt File
     void openOdt(File F){
         try {
             ZipFile zipFile = new ZipFile(F);
@@ -353,11 +434,11 @@ public class Window extends JFrame {
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
-        if (!fileName.contains(".txt")) {
-            fileName += ".txt";
-        }
         if(dirPath == null || fileName == null) {
             return;
+        }
+        if (!fileName.contains(".txt")) {
+            fileName += ".txt";
         }
 
         fileS = new File(dirPath,fileName);

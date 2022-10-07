@@ -7,11 +7,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -22,8 +22,6 @@ import java.io.FileWriter;
 
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-
-
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -38,22 +36,25 @@ public class Window extends JFrame {
     private static int width_screen = RunHere.width;
     private static int height_screen = RunHere.height;
     public static JTextArea workArea;
-    private JScrollPane scrollPane;
-    private JFrame jf = new JFrame();
+    private final JFrame jf = new JFrame();
     public static File file;
+    private JLabel Time;
     private FileDialog saveDia;
-
-
-
     private static String str = "";
 
+    private String currentTime;
+    private int times = 0;
 
     Window() {
-
         init(width_screen, height_screen);
         jf.setVisible(true);
         jf.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        while (true){
+            getTime();
+            Time.setText(currentTime);
+        }
     }
+
 
     void init(int w, int h) {
         //set main table
@@ -65,17 +66,14 @@ public class Window extends JFrame {
 
         //Initialize the tab
         workArea = new JTextArea();
-        scrollPane = new JScrollPane(workArea);
+        JScrollPane scrollPane = new JScrollPane(workArea);
 
         jf.add(scrollPane);
 
         //Initialize the menu
         initMenuBar();
 
-        //将字体变蓝
-//        workArea.setForeground(Color.BLUE);
-
-        //字体大小变粗等
+        //Set font
         workArea.setFont(new Font("Cui", Font.PLAIN, 20));
     }
 
@@ -85,9 +83,11 @@ public class Window extends JFrame {
 
     void initMenuBar(){
         JMenuBar menuBar = new JMenuBar();
+        menuBar.setSize(200,30);
         jf.setJMenuBar(menuBar);
+        Time = new JLabel();
 
-        //菜单栏
+        //Menu Bar
         JMenu menu_file = new JMenu("  File  ");
         JMenu menu_edit = new JMenu("  Edit  ");
         JMenu menu_view = new JMenu("  View  ");
@@ -97,12 +97,18 @@ public class Window extends JFrame {
         menuBar.add(menu_view);
         menuBar.add(menu_help);
 
+        //Add here fot Time&Date and let it not visible
+        menuBar.add(Time);
+        Time.setVisible(false);
+
+
         //File
         JMenuItem fileItem_new = new JMenuItem("new");
         JMenuItem fileItem_open = new JMenuItem("open");
         JMenuItem fileItem_print = new JMenuItem("print");
         JMenuItem fileItem_exit = new JMenuItem("exit");
-        //save 具体
+
+        //save
         JMenu file_save_menu = new JMenu("save");
         JMenuItem savetxt = new JMenuItem("save as '.txt'");
         JMenuItem savepdf = new JMenuItem("save as '.pdf'");
@@ -126,12 +132,12 @@ public class Window extends JFrame {
         menu_edit.add(editItem_paste);
         menu_edit.add(editItem_cut);
 
-        //View 菜单
+        //View Menu
         JMenuItem viewItem_TD = new JMenuItem("Time and Date");
         menu_view.add(viewItem_TD);
 
 
-        //Help 菜单
+        //Help Menu
         JMenuItem helpItem_about = new JMenuItem("about");
         menu_help.add(helpItem_about);
 
@@ -170,9 +176,8 @@ public class Window extends JFrame {
         //search
         editItem_search.addActionListener(e -> Search());
 
+
         //print
-
-
         fileItem_print.addActionListener(e -> {
             try {
                 printer();
@@ -180,7 +185,6 @@ public class Window extends JFrame {
                 ex.printStackTrace();
             }
         });
-
 
         //Time and Date
         viewItem_TD.addActionListener(e -> TD());
@@ -190,11 +194,21 @@ public class Window extends JFrame {
         new search(RunHere.width,RunHere.height);
     }
 
-    void TD(){
-
+    //Get the Current time and pass in the currentTime.
+    void getTime(){
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        currentTime = sdf.format(d);
     }
 
-    void Print(){
+    void TD(){
+        times++;
+        //if click once open the label and click it will turn up
+        if(times%2 == 0) {
+            Time.setVisible(false);
+            return;
+        }
+        Time.setVisible(true);
     }
 
     void New() {
@@ -219,13 +233,11 @@ public class Window extends JFrame {
         }else {
             openElse(F);
         }
-
     }
 
     void openRtf(File F){
         DefaultStyledDocument styleDoc = new DefaultStyledDocument();
         String result;
-        //创建文件输入流
         try {
             InputStream inputStream = new FileInputStream(F);
             try {
@@ -262,15 +274,11 @@ public class Window extends JFrame {
                     } catch (SAXException e) {
                         throw new RuntimeException(e);
                     }
-
-                    //获取节点
                     NodeList list = doc.getElementsByTagName("text:p");
                     for (int a = 0; a < list.getLength(); a++){
                         Node node =list.item(a);
-                        // 递归获取标签内容
                         getText(node);
                         workArea.setText(str);
-                        // 清空数据，记录下个标签的内容
                         str = "";
                     }
                 }
@@ -288,7 +296,6 @@ public class Window extends JFrame {
             }
         } else {
             if (node.getNodeValue() != null) {
-                // str用来连接标签内容 用static修饰
                 str = str + node.getNodeValue();
             }
             if (node.getFirstChild() != null) {
@@ -320,7 +327,6 @@ public class Window extends JFrame {
 
     void Cut(){
         workArea.cut();
-
     }
 
     void Copy(){
@@ -333,11 +339,9 @@ public class Window extends JFrame {
 
 
 
-
     void saveAstxt(){
         saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
         File fileS = null;
-
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
@@ -363,8 +367,7 @@ public class Window extends JFrame {
 
     void saveAspdf() throws Exception{
         saveDia = new FileDialog(this,"save as(B)",FileDialog.SAVE);
-        File fileS1 = null;
-
+        file = null;
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
@@ -374,18 +377,16 @@ public class Window extends JFrame {
         if (!fileName.contains(".pdf")) {
             fileName += ".pdf";
         }
-        fileS1 = new File(dirPath,fileName);
+        file = new File(dirPath,fileName);
         try {
-
-            createpdf(fileS1);
-
+            createPdf();
         }catch (IOException er){
             throw new RuntimeException("file saved failed");
         }
     }
 
 
-    public PDDocument createpdf(File fileS1) throws Exception {
+    public void createPdf() throws Exception {
         String s = workArea.getText();
         String[] strings = s.split("\n");
         PDDocument document=new PDDocument();
@@ -394,6 +395,7 @@ public class Window extends JFrame {
         PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
         PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
         my_page.getResources().add(font);
+
         //set font for pdf
         workArea.getText(0,1);
         for(int i=0;i<strings.length;i++){
@@ -404,20 +406,17 @@ public class Window extends JFrame {
             contentStream.endText();
         }
         contentStream.close();
-        document.save(fileS1);
+        document.save(file);
         document.close();
-
-        return document;
     }
+
     void printer() throws Exception {
         file=new File("D:","a.pdf");
-        createpdf(file);
-       print print=new print();
-       print.PDFprint();
-      if(file.exists()&&file.isFile()){
+        createPdf();
+        print print=new print();
+        print.PDFprint();
+        if(file.exists() && file.isFile()){
           System.out.println(file.delete());
        }
-
     }
-
 }

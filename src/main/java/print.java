@@ -10,13 +10,11 @@ import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
-import java.io.File;
 import java.io.IOException;
 
 public class print {
 
     public  void PDFprint() throws Exception {
-
         String printerName="Microsoft Print to PDF";
         PDDocument document = null;
         try {
@@ -24,8 +22,8 @@ public class print {
             PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setJobName(Window.file.getName());
             if (printerName != null) {
-                // 查找并设置打印机
-                //获得本台电脑连接的所有打印机
+                //Find and set up printers
+                //Get all printers connected to this computer
                 PrintService[] printServices = PrinterJob.lookupPrintServices();
                 if(printServices == null || printServices.length == 0) {
                     System.out.print("Printing failed, no available printer found, please check.");
@@ -64,9 +62,9 @@ public class print {
             //Add print properties
             HashPrintRequestAttributeSet pars = new HashPrintRequestAttributeSet();
             pars.add(Sides.DUPLEX);
+
             //Set up single and double pages
             printJob.print(pars);
-
         }finally {
             if (document != null) {
                 try {

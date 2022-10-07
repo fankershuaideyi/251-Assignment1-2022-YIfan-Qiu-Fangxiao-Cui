@@ -17,12 +17,14 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 public class Window extends JFrame {
     private static int width_screen = RunHere.width;
     private static int height_screen = RunHere.height;
-    public static JTextArea workArea;
-    private JScrollPane scrollPane;
+    public static org.fife.ui.rsyntaxtextarea.RSyntaxTextArea workArea;
+    private RTextScrollPane  scrollPane;
     private JFrame jf = new JFrame();
     public static File file;
     private FileDialog saveDia;
@@ -45,8 +47,9 @@ public class Window extends JFrame {
         height_screen += 100;
 
         //Initialize the tab
-        workArea = new JTextArea();
-        scrollPane = new JScrollPane(workArea);
+        workArea = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
+        workArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        scrollPane = new RTextScrollPane(workArea);
 
         jf.add(scrollPane);
 

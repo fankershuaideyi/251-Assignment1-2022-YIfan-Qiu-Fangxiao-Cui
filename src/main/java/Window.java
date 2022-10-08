@@ -53,10 +53,10 @@ public class Window extends JFrame {
         init(width_screen, height_screen);
         jf.setVisible(true);
         jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        while (true){
-            getTime();
-            Time.setText(currentTime);
-        }
+//        while (true){
+//            getTime();
+//            Time.setText(currentTime);
+//        }
     }
 
     void init(int w, int h) {

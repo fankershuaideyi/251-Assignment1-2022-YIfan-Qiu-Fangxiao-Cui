@@ -42,13 +42,13 @@ We use Circle CI to test our code, it is our CI's link
 
 #### Time and Date:
 
-​           The date and time function is in the view bar and is able to display the current time to the exact second.
+​           The date and time function is in the view bar and is able to display the current time to the exact second. You can click this function in View menubar.
 
-#### Changing Font:
+#### Changing Font (Note: it is one of interest function): 
 
 ​           The change font function can change the color of all fonts in the form.
 
-#### Changing background:
+#### Changing background(Note: it is another interest function):
 
 ​           The change background function can change the background color
 
@@ -62,7 +62,7 @@ We use Circle CI to test our code, it is our CI's link
 
 ### Installation:
 
-​          It's java project you can use in a IDE and the main function in the RunHere.java 
+​          It's java project you can use in a IDE and the main function is the RunHere.java 
 
 ### Support:
 
@@ -70,6 +70,7 @@ We use Circle CI to test our code, it is our CI's link
 
 ### Producer Introduction:
 
-​           Yifan Qiu from Hebut
+​           Yifan Qiu from Hebut Important commit IDs: really final version, Add printer, modifypdf, but not limited to these three
 
-​           Fangxiao Cui from Hebut
+
+​           Fangxiao Cui from Hebut Important commit IDs: 10.2 vesion1.1, search, openmore, but not limited to these three

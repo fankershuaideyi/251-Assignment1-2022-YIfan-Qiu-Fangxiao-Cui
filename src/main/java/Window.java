@@ -39,7 +39,7 @@ public class Window extends JFrame {
 
     public static org.fife.ui.rsyntaxtextarea.RSyntaxTextArea workArea;
     private RTextScrollPane  scrollPane;
-    public static JFrame jf = new JFrame();
+    public  JFrame jf = new JFrame();
 
     public static File file;
     private JLabel Time;

@@ -32,9 +32,9 @@ public class print {
                 }
                 PrintService printService = null;
                 //Matches the specified printer
-                for (int i = 0;i < printServices.length; i++) {
-                    if (printServices[i].getName().contains(printerName)) {
-                        printService = printServices[i];
+                for (PrintService service : printServices) {
+                    if (service.getName().contains(printerName)) {
+                        printService = service;
                         break;
                     }
                 }

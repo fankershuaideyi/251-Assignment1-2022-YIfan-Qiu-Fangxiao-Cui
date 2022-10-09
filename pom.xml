@@ -14,9 +14,22 @@
         <exec.mainClass>com.example.pdfboxcropbox.PDFBoxCropBox</exec.mainClass>
     </properties>
 
+
+
+    <reporting>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.3</version>
+            </plugin>
+
+        </plugins>
+    </reporting>
+
+
     <dependencies>
-
-
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>

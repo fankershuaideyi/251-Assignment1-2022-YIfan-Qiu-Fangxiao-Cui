@@ -411,7 +411,7 @@ public class Window extends JFrame {
     }
 
     void about(){
-        JOptionPane.showMessageDialog(null,"Qiu Yifan\n  Cui Fangxiao is handsome","About Us",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(null,"Qiu Yifan - 21021688\nCui Fangxiao - 21012726\nOur Text Editor","About Us",JOptionPane.PLAIN_MESSAGE);
     }
 
     void Cut(){

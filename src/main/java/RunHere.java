@@ -11,6 +11,5 @@ public class RunHere {
         width = screenSize.width;
         height = screenSize.height;
         new Window();
-
     }
 }

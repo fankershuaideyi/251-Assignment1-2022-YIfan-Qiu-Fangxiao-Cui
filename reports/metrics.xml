@@ -1,0 +1,30 @@
+<METRICS profile="251Assignment" timestamp="??, 9 10? 2022 17:20:30 CST">
+	<METRIC category="Class" name="Coupling between objects" abbreviation="CBO">
+		<VALUE measured="RunHere" value="1.0"/>
+		<VALUE measured="Window" value="5.0"/>
+		<VALUE measured="WindowTest" value="1.0"/>
+		<VALUE measured="print" value="2.0"/>
+		<VALUE measured="search" value="2.0"/>
+		<VALUE measured="searchTest" value="1.0"/>
+	</METRIC>
+	<METRIC category="Class" name="Lines of code" abbreviation="LOC">
+		<VALUE measured="RunHere" value="12.0"/>
+		<VALUE measured="Window" value="407.0"/>
+		<VALUE measured="WindowTest" value="20.0"/>
+		<VALUE measured="print" value="77.0"/>
+		<VALUE measured="search" value="113.0"/>
+		<VALUE measured="searchTest" value="8.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Number of classes" abbreviation="C">
+		<VALUE measured="project" value="7.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Number of methods" abbreviation="METH">
+		<VALUE measured="project" value="34.0"/>
+	</METRIC>
+	<METRIC category="Project" name="Average cyclomatic complexity" abbreviation="v(G)avg">
+		<VALUE measured="project" value="2.264705882352941"/>
+	</METRIC>
+	<METRIC category="Project" name="Total cyclomatic complexity" abbreviation="v(G)tot">
+		<VALUE measured="project" value="77.0"/>
+	</METRIC>
+</METRICS>

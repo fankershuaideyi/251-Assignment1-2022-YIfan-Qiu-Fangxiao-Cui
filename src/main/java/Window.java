@@ -47,6 +47,7 @@ public class Window extends JFrame {
     private static String str = "";
 
     private String currentTime;
+
     private int times = 0;
 
     Window() {
@@ -301,7 +302,6 @@ public class Window extends JFrame {
         jp.add(savePDF);
         jp.add(notSave);
         jp.add(Cancel);
-
     }
 
     void open() {

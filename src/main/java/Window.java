@@ -40,7 +40,7 @@ public class Window extends JFrame {
     private int height_screen = RunHere.height;
 
     public static org.fife.ui.rsyntaxtextarea.RSyntaxTextArea workArea;
-    private RTextScrollPane  scrollPane;
+    private RTextScrollPane scrollPane;
 //    public  JFrame jf = new JFrame();
 
     public String result;
@@ -81,14 +81,11 @@ public class Window extends JFrame {
     }
 
 
-
-
-
-    void initMenuBar(){
+    void initMenuBar() {
 
 
         menuBar = new JMenuBar();
-        menuBar.setSize(200,30);
+        menuBar.setSize(200, 30);
         this.setJMenuBar(menuBar);
 
         //Menu Bar
@@ -206,25 +203,20 @@ public class Window extends JFrame {
 
 
         //print
-        fileItem_print.addActionListener(e -> {
-            try {
-                printer();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
+        fileItem_print.addActionListener(e -> new Print());
 
         //Time and Date
         viewItem_TD.addActionListener(e -> TD());
 
         Time = new JMenuItem();
         class TimeActionListener implements ActionListener {
-            public TimeActionListener(){
-                javax.swing.Timer t=new javax.swing.Timer(1000,this);
+            public TimeActionListener() {
+                javax.swing.Timer t = new javax.swing.Timer(1000, this);
                 t.start();
             }
+
             @Override
-            public void actionPerformed(ActionEvent ae){
+            public void actionPerformed(ActionEvent ae) {
                 getTime();
                 Time.setText(currentTime);
             }
@@ -234,21 +226,21 @@ public class Window extends JFrame {
         Time.setVisible(false);
     }
 
-    void Search(){
-        new search(RunHere.width,RunHere.height);
+    void Search() {
+        new search(RunHere.width, RunHere.height);
     }
 
     //Get the Current time and pass in the currentTime.
-    void getTime(){
+    void getTime() {
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         currentTime = sdf.format(d);
     }
 
-    void TD(){
+    void TD() {
         times++;
         //if click once open the label and click it will turn up
-        if(times%2 == 0) {
+        if (times % 2 == 0) {
             Time.setVisible(false);
             return;
         }
@@ -259,18 +251,18 @@ public class Window extends JFrame {
         //Whether to save the current file when creating a JDialog
         JDialog jd1 = new JDialog(this);
         jd1.setLayout(new FlowLayout(FlowLayout.LEFT));
-        jd1.setBounds((width_screen-260)/2,(height_screen-130)/2,260,130);
+        jd1.setBounds((width_screen - 260) / 2, (height_screen - 130) / 2, 260, 130);
         jd1.setVisible(true);
         jd1.setTitle("Notepad");
         //add buttons
         JLabel jLabel = new JLabel("Do you want to save changes?");
-        jLabel.setFont(new Font("QWE",Font.PLAIN,16));
+        jLabel.setFont(new Font("QWE", Font.PLAIN, 16));
         JButton save = new JButton("Save as 'txt'");
         JButton savePDF = new JButton("Save as 'pdf'");
         JButton notSave = new JButton("Don't save");
         JButton Cancel = new JButton("Cancel");
         JPanel jp = new JPanel();
-        jp.setLayout(new GridLayout(2,2));
+        jp.setLayout(new GridLayout(2, 2));
 
         //ActionListener
         save.addActionListener(e -> {
@@ -300,6 +292,7 @@ public class Window extends JFrame {
         jp.add(Cancel);
     }
 
+
     File open() {
         JFileChooser jFileChooser = new JFileChooser();
         int chose = jFileChooser.showOpenDialog(this);
@@ -309,25 +302,25 @@ public class Window extends JFrame {
         File F = jFileChooser.getSelectedFile();
         workArea.setText("");
         this.setTitle(F.getName());
-        if(F.getName().contains(".rtf")){
+        if (F.getName().contains(".rtf")) {
             openRtf(F);
-        }else if(F.getName().contains(".odt")){
+        } else if (F.getName().contains(".odt")) {
             openOdt(F);
-        }else {
+        } else {
             openElse(F);
         }
         return F;
     }
 
     //Open .rtf
-    String openRtf(File F){
+    String openRtf(File F) {
         DefaultStyledDocument styleDoc = new DefaultStyledDocument();
         result = "";
         try {
             InputStream inputStream = new FileInputStream(F);
             try {
-                new RTFEditorKit().read(inputStream,styleDoc,0);
-                result = new String(styleDoc.getText(0,styleDoc.getLength()).getBytes("ISO8859-1"),"GBK");
+                new RTFEditorKit().read(inputStream, styleDoc, 0);
+                result = new String(styleDoc.getText(0, styleDoc.getLength()).getBytes("ISO8859-1"), "GBK");
             } catch (IOException | BadLocationException e) {
                 throw new RuntimeException(e);
             }
@@ -339,15 +332,15 @@ public class Window extends JFrame {
     }
 
     //open odt File
-    void openOdt(File F){
+    void openOdt(File F) {
         try {
             ZipFile zipFile = new ZipFile(F);
             org.w3c.dom.Document doc = null;
             Enumeration<?> entries = zipFile.entries();
             ZipEntry entry;
-            while (entries.hasMoreElements()){
-                entry = (ZipEntry)entries.nextElement();
-                if(entry.getName().equals("content.xml")){
+            while (entries.hasMoreElements()) {
+                entry = (ZipEntry) entries.nextElement();
+                if (entry.getName().equals("content.xml")) {
                     DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
                     domFactory.setNamespaceAware(true);
                     DocumentBuilder docBuilder = null;
@@ -362,8 +355,8 @@ public class Window extends JFrame {
                         throw new RuntimeException(e);
                     }
                     NodeList list = doc.getElementsByTagName("text:p");
-                    for (int a = 0; a < list.getLength(); a++){
-                        Node node =list.item(a);
+                    for (int a = 0; a < list.getLength(); a++) {
+                        Node node = list.item(a);
                         getText(node);
                         workArea.setText(str);
                         str = "";
@@ -391,85 +384,85 @@ public class Window extends JFrame {
         }
     }
 
-    void openElse(File F){
+    void openElse(File F) {
         if (F != null) {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(F));
                 String line;
-                while((line = br.readLine()) != null){
+                while ((line = br.readLine()) != null) {
                     workArea.append(line + "\r\n");
                 }
-            }catch (IOException er1){
+            } catch (IOException er1) {
                 throw new RuntimeException("Failed!！");
             }
         }
     }
-    void exit(){
+
+    void exit() {
         this.dispose();
     }
 
-    void about(){
-        JOptionPane.showMessageDialog(null,"Qiu Yifan - 21021688\nCui Fangxiao - 21012726\nOur Text Editor","About Us",JOptionPane.PLAIN_MESSAGE);
+    void about() {
+        JOptionPane.showMessageDialog(null, "Qiu Yifan - 21021688\nCui Fangxiao - 21012726\nOur Text Editor", "About Us", JOptionPane.PLAIN_MESSAGE);
     }
 
-    void Cut(){
+    void Cut() {
         workArea.cut();
     }
 
-    void Copy(){
+    void Copy() {
         workArea.copy();
     }
 
-    void Paste(){
+    void Paste() {
         workArea.paste();
     }
 
 
-
-    void saveAstxt(){
-        saveDia = new FileDialog(this,"save as(A)",FileDialog.SAVE);
+    void saveAstxt() {
+        saveDia = new FileDialog(this, "save as(A)", FileDialog.SAVE);
         File fileS = null;
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
-        if(dirPath == null || fileName == null) {
+        if (dirPath == null || fileName == null) {
             return;
         }
         if (!fileName.contains(".txt")) {
             fileName += ".txt";
         }
 
-        fileS = new File(dirPath,fileName);
+        fileS = new File(dirPath, fileName);
 
-      saveAstxt(fileS,workArea.getText());
+        saveAstxt(fileS, workArea.getText());
     }
 
-    void saveAstxt(File fileS,String text){
-        try{
+    void saveAstxt(File fileS, String text) {
+        try {
             BufferedWriter bufw = new BufferedWriter(new FileWriter(fileS));
             bufw.write(text);
             bufw.close();
-        }catch(IOException er){
+        } catch (IOException er) {
             throw new RuntimeException("file saved failed");
         }
     }
 
-    void saveAspdf() throws Exception{
-        saveDia = new FileDialog(this,"save as(B)",FileDialog.SAVE);
+    void saveAspdf() throws Exception {
+        saveDia = new FileDialog(this, "save as(B)", FileDialog.SAVE);
         file = null;
         saveDia.setVisible(true);
         String dirPath = saveDia.getDirectory();
         String fileName = saveDia.getFile();
-        if(dirPath == null || fileName == null) {
+        if (dirPath == null || fileName == null) {
             return;
         }
         if (!fileName.contains(".pdf")) {
             fileName += ".pdf";
         }
-        file = new File(dirPath,fileName);
+        file = new File(dirPath, fileName);
         try {
             createPdf(file);
-        }catch (IOException er){
+        } catch (IOException er) {
             throw new RuntimeException("file saved failed");
         }
     }
@@ -478,18 +471,18 @@ public class Window extends JFrame {
     public boolean createPdf(File file) throws Exception {
         String s = workArea.getText();
         String[] strings = s.split("\n");
-        PDDocument document=new PDDocument();
-        PDPage my_page=new PDPage(PDRectangle.A4);
+        PDDocument document = new PDDocument();
+        PDPage my_page = new PDPage(PDRectangle.A4);
         document.addPage(my_page);
-        PDFont font= PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
-        PDPageContentStream contentStream = new PDPageContentStream(document,my_page);
+        PDFont font = PDType0Font.load(document, new File("C:/Windows/Fonts/Arial.ttf"));
+        PDPageContentStream contentStream = new PDPageContentStream(document, my_page);
         my_page.getResources().add(font);
 
         //set font for pdf
-        for(int i=0;i<strings.length;i++){
+        for (int i = 0; i < strings.length; i++) {
             contentStream.beginText();
-            contentStream.setFont(font,10);
-            contentStream.newLineAtOffset(10,  820-i*20);
+            contentStream.setFont(font, 10);
+            contentStream.newLineAtOffset(10, 820 - i * 20);
             contentStream.showText(strings[i]);
             contentStream.endText();
         }
@@ -497,15 +490,5 @@ public class Window extends JFrame {
         document.save(file);
         document.close();
         return true;
-    }
-
-    void printer() throws Exception {
-        file=new File("D:","a.pdf");
-        createPdf(file);
-        print print=new print();
-        print.PDFprint();
-        if(file.exists() && file.isFile()){
-          System.out.println(file.delete());
-       }
     }
 }

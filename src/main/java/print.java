@@ -1,93 +1,87 @@
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.printing.PDFPrintable;
-import org.apache.pdfbox.printing.Scaling;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.print.*;
 
-import javax.print.PrintService;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.standard.Sides;
-import javax.swing.*;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.PrinterJob;
-import java.io.IOException;
+class Print {
 
-public class print {
 
-    public  void PDFprint() throws Exception {
-        String printerName="Microsoft Print to PDF";
-        PDDocument document = null;
-        try {
-            document = PDDocument.load(Window.file);
-            PrinterJob printJob = PrinterJob.getPrinterJob();
-            printJob.setJobName(Window.file.getName());
-            if (printerName != null) {
-                //Find and set up printers
-                //Get all printers connected to this computer
-                PrintService[] printServices = PrinterJob.lookupPrintServices();
-                if(printServices == null || printServices.length == 0) {
-                    System.out.print("Printing failed, no available printer found, please check.");
-                    JOptionPane.showMessageDialog(null,"Printing failed","Warning Message",JOptionPane.PLAIN_MESSAGE);
-                    return ;
+    public static class PrintClass implements Printable {
+
+        @Override
+        public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
+
+            //print string
+            String str = Window.workArea.getText();
+            //turn Graphics2D
+            Graphics2D g2 = (Graphics2D) graphics;
+            //set black
+            g2.setColor(Color.black);
+            //zuo biao
+            double x = pageFormat.getImageableX();
+            double y = pageFormat.getImageableY();
+
+            if (pageIndex == 0) {
+
+                Font font = new Font("Arial", Font.PLAIN, 9);
+                //set font
+                g2.setFont(font);
+
+                float[] dash1 = {2.0f};
+                //Sets the properties of the print line.
+                //Parameter 1 is the line width 4 is the width of the blank, 5 is the width of the dashed line, 6 is the offset
+                g2.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2.0f, dash1, 0.0f));
+                //set height
+                float height = font.getSize2D();
+
+                String[] sp=str.split(String.valueOf('\n'));
+                int line=0;
+                for(String s : sp) {
+                    g2.drawString(s, (float) x, (float) y + line * height+13);
+                    line++;
                 }
-                PrintService printService = null;
-                //Matches the specified printer
-                for (PrintService service : printServices) {
-                    if (service.getName().contains(printerName)) {
-                        printService = service;
-                        break;
-                    }
-                }
-                if(printService!=null){
-                    printJob.setPrintService(printService);
-                }else{
-                    System.out.print("Can‘t printing, Couldn't find the name of" + printerName + "printer,please checkout");
-                    return ;
-                }
+                return PAGE_EXISTS;
             }
-            //Set the paper and scale
-            PDFPrintable pdfPrintable = new PDFPrintable(document, Scaling.ACTUAL_SIZE);
-            //Set up multi-page printing
-            Book book = new Book();
-            PageFormat pageFormat = new PageFormat();
-            //Sets the print orientation
-            pageFormat.setOrientation(PageFormat.PORTRAIT);
-            //Longitudinal
-            pageFormat.setPaper(getPaper());
-            //Set the paper
-            book.append(pdfPrintable, pageFormat, document.getNumberOfPages());
-            printJob.setPageable(book);
-            printJob.setCopies(1);
-            //Set the number of copies printed
-            //Add print properties
-            HashPrintRequestAttributeSet pars = new HashPrintRequestAttributeSet();
-            pars.add(Sides.DUPLEX);
-
-            //Set up single and double pages
-            printJob.print(pars);
-        }finally {
-            if (document != null) {
-                try {
-                    document.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            return NO_SUCH_PAGE;
         }
     }
-    public static Paper getPaper() {
-        Paper paper = new Paper();
-        // The default is A4 paper, corresponding to 595 and 842 pixel widths and heights, respectively
-        int width = 595;
-        int height = 842;
-        // Set the margin, the unit is pixels, 10mm margin, corresponding to 28px
-        int marginLeft = 10;
-        int marginRight = 0;
-        int marginTop = 10;
-        int marginBottom = 0;
-        paper.setSize(width, height);
-        // solves the problem that the printed content is empty
-        paper.setImageableArea(marginLeft, marginRight, width - (marginLeft + marginRight), height - (marginTop + marginBottom));
-        return paper;
+    public Print() {
+        //new一个book
+        Book book = new Book();
+        //Set to vertical typing
+        PageFormat pf = new PageFormat();
+        pf.setOrientation(PageFormat.PORTRAIT);
+        //Set the margins and printable area of the page with Paper. Must match the actual printable paper size.
+        Paper p = new Paper();
+        //Paper size
+        p.setSize(570, 880);
+        //A4 (595 X 842) set the print area, the default X,Y margins of A4 paper is 72
+        p.setImageableArea(69, 69, 595, 842);
+
+        pf.setPaper(p);
+
+        //Deployment Components
+        book.append(new PrintClass(), pf);
+
+        //Obtain print service recipients
+        PrinterJob job = PrinterJob.getPrinterJob();
+
+        //Set Print Class
+        job.setPageable(book);
+
+        try {
+            //You can use printDialog to display the print dialog and print after user confirmation; you can also print directly
+            boolean a = job.printDialog();
+            if (a) {
+                job.print();
+            } else {
+                job.cancel();
+            }
+        } catch (PrinterException e) {
+            e.printStackTrace();
+        }
     }
+
 }

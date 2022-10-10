@@ -8,7 +8,7 @@ import java.awt.print.*;
  * 打印功能对话框
  * @author Tyrion Lannister
  */
-public class Print {
+public class print {
     /**
      * 打印函数
      */
@@ -60,7 +60,7 @@ public class Print {
         }
     }
 
-    public Print() {
+    public print() {
         //new一个book
         Book book = new Book();
         //设置成竖打

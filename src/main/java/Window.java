@@ -230,7 +230,7 @@ public class Window extends JFrame {
 
 
         //print
-        fileItem_print.addActionListener(e -> new Print());
+        fileItem_print.addActionListener(e -> new print());
 
         //Time and Date
         viewItem_TD.addActionListener(e -> TD());

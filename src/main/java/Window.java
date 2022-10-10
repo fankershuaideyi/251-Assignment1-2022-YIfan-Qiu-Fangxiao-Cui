@@ -12,6 +12,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.io.BufferedReader;
@@ -41,7 +42,6 @@ public class Window extends JFrame {
 
     public static org.fife.ui.rsyntaxtextarea.RSyntaxTextArea workArea;
     private RTextScrollPane scrollPane;
-//    public  JFrame jf = new JFrame();
 
     public String result;
     public static File file;
@@ -51,6 +51,7 @@ public class Window extends JFrame {
 
     private int times = 0;
 
+    YamlUtil yamlUtil=new YamlUtil();
     private String currentTime;
     JMenuBar menuBar;
 
@@ -61,6 +62,12 @@ public class Window extends JFrame {
     }
 
     void init(int w, int h) {
+        try {
+            yamlUtil.read();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         //set main table
         this.setTitle("Text Editor");
         this.setBounds((w - 500) / 2, (h - 700) / 2, 500, 700);
@@ -76,14 +83,21 @@ public class Window extends JFrame {
         //Initialize the menu
         initMenuBar();
 
+
         //Set font
-        workArea.setFont(new Font("Cui", Font.PLAIN, 20));
+        workArea.setFont(new Font("Cui",(int)yamlUtil.map.get("font-style"), (int)yamlUtil.map.get("font-size")));
+        Pattern pattern = Pattern.compile("\\D+");
+        String[]str2 = pattern.split((CharSequence) yamlUtil.map.get("font-color"));
+        Color color=new Color(
+                Integer.parseInt(str2[1]),
+                Integer.parseInt(str2[2]),
+                Integer.parseInt(str2[3])
+        );
+        workArea.setForeground(color);
     }
 
 
     void initMenuBar() {
-
-
         menuBar = new JMenuBar();
         menuBar.setSize(200, 30);
         this.setJMenuBar(menuBar);
@@ -138,10 +152,23 @@ public class Window extends JFrame {
         JMenuItem F_Black = new JMenuItem("Black");
         JMenuItem F_RED = new JMenuItem("Red");
         JMenuItem F_Green = new JMenuItem("Green");
-        F_Blue.addActionListener(e -> workArea.setForeground(Color.BLUE));
-        F_Black.addActionListener(e -> workArea.setForeground(Color.BLACK));
-        F_RED.addActionListener(e -> workArea.setForeground(Color.RED));
-        F_Green.addActionListener(e -> workArea.setForeground(Color.GREEN));
+
+        F_Blue.addActionListener(e -> {
+            workArea.setForeground(Color.BLUE);
+            ChangeColor();
+        });
+        F_Black.addActionListener(e -> {
+            workArea.setForeground(Color.BLACK);
+            ChangeColor();
+        });
+        F_RED.addActionListener(e -> {
+            workArea.setForeground(Color.RED);
+            ChangeColor();
+        });
+        F_Green.addActionListener(e -> {
+            workArea.setForeground(Color.GREEN);
+            ChangeColor();
+        });
         Font.add(F_Black);
         Font.add(F_Blue);
         Font.add(F_RED);
@@ -228,6 +255,17 @@ public class Window extends JFrame {
 
     void Search() {
         new search(RunHere.width, RunHere.height);
+    }
+
+
+    //it will save the color and your will open next time it will not change
+    void ChangeColor(){
+        yamlUtil.map.put("font-color",workArea.getForeground().toString());
+        try {
+            yamlUtil.write();
+        }catch (IOException ex){
+            ex.printStackTrace();
+        }
     }
 
     //Get the Current time and pass in the currentTime.

@@ -1,6 +1,10 @@
 # 251-Assignment1-2022-Yifan-Qiu-Fangxiao-Cui
+==Note:We had submitted the really really final version in GitHub. However, we made a mistake in Stream‘s submitting because a wrong translation by ourselves cause we lose a file. So we re-submit in Github and hope the professor could see this.==
+
 We use Circle CI to test our code, it is our CI's link
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/fankershuaideyi/251-Assignment1-2022-YIfan-Qiu-Fangxiao-Cui/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/fankershuaideyi/251-Assignment1-2022-YIfan-Qiu-Fangxiao-Cui/tree/main)
+
+
 
 ### Introduction：
 
@@ -11,6 +15,9 @@ We use Circle CI to test our code, it is our CI's link
 ####       New:  
 
 ​         It is a function from File's button, In this function, it could create a new page in the screen, At the moment, it could choose some save function to use. 
+
+###        Yaml:
+        We have a function that we will save the text color you have changed if you exit. For example you change the font color to green and then exit. Next open the Text Editor the font color will be green at start.
 
 #### Save：
 
@@ -34,11 +41,11 @@ We use Circle CI to test our code, it is our CI's link
 
 #### Open:
 
-​         The open function can help open a series of files that already exist, currently the open function supports files such as .txt, .odt, .doc, .rtf, etc.
+​         The open function can help open a series of files that already exist, currently the open function supports files such as .txt, .odt, .rtf, etc.
 
 #### Print:
 
-​         Print function can help print the text currently edited, it will be stored in the form of pdf while printing down, at the same time, **it should be noted that**, as the author does not have a printer, so only the Microsoft Print to PDF printer selected for printing, can not support other printers.
+​       Print function can help print the text currently edited, it will be stored in the form of pdf while printing, at the same time.
 
 #### Time and Date:
 
@@ -70,7 +77,7 @@ We use Circle CI to test our code, it is our CI's link
 
 ### Producer Introduction:
 
-​           Yifan Qiu from Hebut Important commit IDs: really final version, Add printer, modifypdf, but not limited to these three
+​      Yifan Qiu from Hebut  Important commit IDs: really final version, Add printer, modifypdf and more
 
 
-​           Fangxiao Cui from Hebut Important commit IDs: 10.2 vesion1.1, search, openmore, but not limited to these three
+​      Fangxiao Cui from Hebut Important commit IDs: 10.2 vesion1.1, search, openmore and more

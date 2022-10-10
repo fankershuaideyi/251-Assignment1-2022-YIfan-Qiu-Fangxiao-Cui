@@ -4,9 +4,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.print.*;
-
-class Print {
-
+/**
+ * 打印功能对话框
+ * @author Tyrion Lannister
+ */
+public class Print {
+    /**
+     * 打印函数
+     */
 
     public static class PrintClass implements Printable {
 
@@ -15,64 +20,72 @@ class Print {
 
             //print string
             String str = Window.workArea.getText();
-            //turn Graphics2D
+            //转换成Graphics2D
             Graphics2D g2 = (Graphics2D) graphics;
-            //set black
+            //设置打印颜色为黑色
             g2.setColor(Color.black);
-            //zuo biao
+            //打印起点坐标
             double x = pageFormat.getImageableX();
             double y = pageFormat.getImageableY();
 
             if (pageIndex == 0) {
-
-                Font font = new Font("Arial", Font.PLAIN, 9);
-                //set font
+                //设置打印字体（字体名称、样式和点大小）（字体名称可以是物理或者逻辑名称）
+                //Java平台所定义的五种字体系列：Serif、SansSerif、Monospaced、Dialog 和 DialogInput
+                Font font = new Font("新宋体", Font.PLAIN, 9);
+                //设置字体
                 g2.setFont(font);
 
                 float[] dash1 = {2.0f};
-                //Sets the properties of the print line.
-                //Parameter 1 is the line width 4 is the width of the blank, 5 is the width of the dashed line, 6 is the offset
+                //设置打印线的属性。
+                //参数1为线宽 4为空白的宽度，5为虚线的宽度，6为偏移量
                 g2.setStroke(new BasicStroke(0.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 2.0f, dash1, 0.0f));
-                //set height
+                //字体高度
                 float height = font.getSize2D();
-
+                //以换行符号为标志打印内容
                 String[] sp=str.split(String.valueOf('\n'));
                 int line=0;
                 for(String s : sp) {
-                    g2.drawString(s, (float) x, (float) y + line * height+13);
+                    g2.drawString(s, (float) x, (float) y + line * height+15);
                     line++;
                 }
+                //一条隐藏的版权信息
+               /* String copyright="本打印服务由王轩王亚飞提供";
+                g2.drawLine((int) x, (int) (y + line * height  + 10), (int) x + 446, (int) (y + line * height  + 10));
+                g2.drawString(copyright, (float) x+320, (float) y + line * height+22);
+                g2.drawLine((int) x, (int) (y + line * height  + 30), (int) x + 446, (int) (y + line * height  + 30));*/
+
                 return PAGE_EXISTS;
             }
             return NO_SUCH_PAGE;
         }
     }
+
     public Print() {
         //new一个book
         Book book = new Book();
-        //Set to vertical typing
+        //设置成竖打
         PageFormat pf = new PageFormat();
         pf.setOrientation(PageFormat.PORTRAIT);
-        //Set the margins and printable area of the page with Paper. Must match the actual printable paper size.
+        //通过Paper设置页面的空白边距和可打印区域。必须与实际打印纸张大小相符。
         Paper p = new Paper();
-        //Paper size
-        p.setSize(570, 880);
-        //A4 (595 X 842) set the print area, the default X,Y margins of A4 paper is 72
-        p.setImageableArea(69, 69, 595, 842);
+        //纸张大小
+        p.setSize(590, 840);
+        //A4(595 X 842)设置打印区域，A4纸的默认X,Y边距是72
+        p.setImageableArea(72, 72, 595, 842);
 
         pf.setPaper(p);
 
-        //Deployment Components
+        //部署部件
         book.append(new PrintClass(), pf);
 
-        //Obtain print service recipients
+        //获取打印服务对象
         PrinterJob job = PrinterJob.getPrinterJob();
 
-        //Set Print Class
+        //设置打印类
         job.setPageable(book);
 
         try {
-            //You can use printDialog to display the print dialog and print after user confirmation; you can also print directly
+            //可以用printDialog显示打印对话框，在用户确认后打印；也可以直接打印
             boolean a = job.printDialog();
             if (a) {
                 job.print();
